@@ -1,0 +1,6 @@
+[http]
+  [http.services]
+    [http.services.elk]
+      [http.services.elk.loadBalancer]
+        [[http.services.elk.loadBalancer.servers]]
+          url = "http://192.168.10.53:5601/"
