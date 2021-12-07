@@ -1,0 +1,25 @@
+version: '3'
+
+services:
+  reverse-proxy:
+    restart: always
+    image: traefik:v2.0
+    ports:
+    - "443:443"
+    - "80:80"
+    volumes:
+    - ./traefik.toml:/etc/traefik/traefik.toml
+    - ./services.toml:/etc/traefik/services.toml
+    - /var/run/docker.sock:/var/run/docker.sock
+    labels:
+    - "traefik.http.routers.api.rule=Host(`traefik.packops.local`)"
+    - "traefik.http.routers.api.service=api@internal"
+    - "traefik.http.routers.api.entrypoints=http"
+    - "traefik.http.routers.api.middlewares=auth"
+    - "traefik.http.middlewares.auth.basicauth.users=packops:$$apr1$$1eZu7RXg$$Ql9Z5AvZNc0Oe4In900mi0"
+    - "traefik.http.routers.nas.entrypoints=https,http"
+
+    - "traefik.http.routers.nas.rule=Host(`elk.packops.local`)"
+    - "traefik.http.routers.nas.service=elk@file"
+    - "traefik.http.routers.nas.tls=true"
+    - "traefik.http.routers.nas.tls.certresolver=elk"
